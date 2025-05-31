@@ -25,6 +25,7 @@ jobs:
 
       - name: Retrain the model
         run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           python src/train.py
 
       - name: Commit and push new model
