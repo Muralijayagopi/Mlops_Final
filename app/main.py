@@ -1,7 +1,7 @@
 import joblib
 import os
 from flask import Flask, render_template, request
-
+# libraries
 app = Flask(__name__)
 
 MODEL_PATH = os.path.join('src', 'model.pkl')
