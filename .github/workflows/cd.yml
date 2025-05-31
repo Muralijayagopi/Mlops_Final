@@ -1,4 +1,4 @@
-name: Deploy to VM
+name: Continuous Deployment to VM
 
 on:
   push:
@@ -6,8 +6,9 @@ on:
       - main
     paths:
       - 'Dockerfile'
-      - 'src/**'
       - 'app.py'
+      - 'requirements.txt'
+      - 'src/**'
       - 'model/**'
 
 jobs:
@@ -15,25 +16,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up SSH key
+      - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Copy files to VM
+      - name: Copy project to VM
         run: |
-          scp -o StrictHostKeyChecking=no -r ./* ${{ secrets.VM_USER }}@${{ secrets.VM_IP }}:~/Mlops_Final/
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ${{ secrets.VM_USER }}@${{ secrets.VM_IP }}:~/Mlops_Final/
 
-      - name: Deploy on VM via SSH
+      - name: Deploy on remote VM
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_IP }} << 'EOF'
             cd ~/Mlops_Final
-            docker build -t salary-predictor-app .
             docker stop salary-container || true
             docker rm salary-container || true
+            docker build -t salary-predictor-app .
             docker run -d -p 5000:5000 --name salary-container salary-predictor-app
           EOF
