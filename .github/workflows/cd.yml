@@ -5,11 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'Dockerfile'
-      - 'app.py'
-      - 'requirements.txt'
-      - 'src/**'
-      - 'model/**'
+      - '**'  # Triggers on any file change
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   deploy:
@@ -24,8 +21,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
 
       - name: Add VM to known_hosts
         run: |
