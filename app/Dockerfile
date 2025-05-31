@@ -1,20 +1,20 @@
 # Use Python 3.10 slim as base
 FROM python:3.10-slim
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy everything from the current context to the container
+# Copy project files into the container
 COPY . .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Train the model inside the container (ensure salary_data.csv is present)
+# Train the model (after dependencies are available)
 RUN python3 src/train.py
 
-# Expose the port Flask will run on
+# Expose Flask port
 EXPOSE 5000
 
-# Start the Flask app
+# Run the app
 CMD ["python3", "app/main.py"]
