@@ -10,7 +10,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Train the model before running the app
-RUN python3 src/train.py
+RUN python3 -m src.train
 
 # Expose the port
 EXPOSE 5000
