@@ -1,6 +1,6 @@
 import joblib
 from sklearn.linear_model import LinearRegression
-from preprocessing import load_and_split_data
+from src.preprocessing import load_and_split_data
 import os
 
 def train_model():
