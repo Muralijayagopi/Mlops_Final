@@ -1,14 +1,19 @@
 from flask import Flask, render_template, request
 import joblib
 import numpy as np
+import os
 
 app = Flask(__name__)
 
-try:
-    model = joblib.load("src/model.pkl")
-except FileNotFoundError:
+model_path = "src/model.pkl"
+
+# Load the model with error handling
+if not os.path.exists(model_path):
+    print(f"⚠️  Model file not found at: {model_path}")
     model = None
-    print("Model file not found. Please train the model first.")
+else:
+    print(f"✅ Loading model from: {model_path}")
+    model = joblib.load(model_path)
 
 @app.route('/')
 def home():
@@ -17,14 +22,14 @@ def home():
 @app.route('/predict', methods=["POST"])
 def predict():
     if model is None:
-        return "Model not loaded. Please train the model first.", 500
+        return render_template("result.html", experience=None, prediction=None, error="Model not loaded. Please train your model first.")
+    
     try:
         experience = float(request.form['experience'])
         prediction = model.predict(np.array([[experience]]))[0]
-        return render_template("result.html", experience=experience, prediction=round(prediction, 2))
-    except ValueError:
-        return "Invalid input. Please enter a number.", 400
+        return render_template("result.html", experience=experience, prediction=round(prediction, 2), error=None)
+    except Exception as e:
+        return render_template("result.html", experience=None, prediction=None, error=f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
+    app.run(debug=True, host="0.0.0.0")
