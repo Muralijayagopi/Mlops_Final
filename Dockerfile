@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Train the model before running the app
 RUN python3 -m src.train
 
-# Expose the port
+# Expose the ports
 EXPOSE 5000
 
 # Run the Flask application
